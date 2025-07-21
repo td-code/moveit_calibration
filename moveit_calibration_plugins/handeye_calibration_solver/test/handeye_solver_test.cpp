@@ -117,23 +117,23 @@ TEST_F(MoveItHandEyeSolverTester, SolveAXEQXB)
   std::vector<Eigen::Isometry3d> eef_wrt_world(root_.size(), Eigen::Isometry3d::Identity());
   std::vector<Eigen::Isometry3d> obj_wrt_sensor(root_.size(), Eigen::Isometry3d::Identity());
 
-  for (int i = 0; i < root_.size(); ++i)
+  for (unsigned int i = 0; i < root_.size(); ++i)
   {
     Json::Value json_eef_wrt_world = root_[i][0];
     ASSERT_EQ(json_eef_wrt_world.size(), 4);
-    for (int m = 0; m < json_eef_wrt_world.size(); ++m)
+    for (unsigned int m = 0; m < json_eef_wrt_world.size(); ++m)
     {
       ASSERT_EQ(json_eef_wrt_world[m].size(), 4);
-      for (int n = 0; n < json_eef_wrt_world[m].size(); ++n)
+      for (unsigned int n = 0; n < json_eef_wrt_world[m].size(); ++n)
         eef_wrt_world[i](m, n) = json_eef_wrt_world[m][n].asDouble();
     }
 
     Json::Value json_obj_wrt_sensor = root_[i][1];
     ASSERT_EQ(json_obj_wrt_sensor.size(), 4);
-    for (int m = 0; m < json_obj_wrt_sensor.size(); ++m)
+    for (unsigned int m = 0; m < json_obj_wrt_sensor.size(); ++m)
     {
       ASSERT_EQ(json_obj_wrt_sensor[m].size(), 4);
-      for (int n = 0; n < json_obj_wrt_sensor[m].size(); ++n)
+      for (unsigned int n = 0; n < json_obj_wrt_sensor[m].size(); ++n)
         obj_wrt_sensor[i](m, n) = json_obj_wrt_sensor[m][n].asDouble();
     }
   }

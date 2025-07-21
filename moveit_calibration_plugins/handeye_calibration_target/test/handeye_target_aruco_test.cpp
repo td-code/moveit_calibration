@@ -39,7 +39,11 @@
 #include <rclcpp/rclcpp.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <opencv2/core/core.hpp>
+#if __has_include(<tf2_eigen/tf2_eigen.hpp>)
+#include <tf2_eigen/tf2_eigen.hpp>
+#else
 #include <tf2_eigen/tf2_eigen.h>
+#endif
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <pluginlib/class_loader.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>

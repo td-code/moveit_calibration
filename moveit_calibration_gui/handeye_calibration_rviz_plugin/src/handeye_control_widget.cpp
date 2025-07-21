@@ -35,7 +35,11 @@
 /* Author: Yu Yan */
 
 #include <moveit/handeye_calibration_rviz_plugin/handeye_control_widget.h>
+#if __has_include(<tf2_geometry_msgs/tf2_geometry_msgs.hpp>)
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#else
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#endif
 #include <rclcpp/rclcpp.hpp>
 
 namespace moveit_rviz_plugin
@@ -96,8 +100,8 @@ int ProgressBarWidget::getValue()
 
 ControlTabWidget::ControlTabWidget(rclcpp::Node::SharedPtr node, HandEyeCalibrationDisplay* pdisplay, QWidget* parent)
   : QWidget(parent)
-  , node_(node)
   , calibration_display_(pdisplay)
+  , node_(node)
   , tf_buffer_(new tf2_ros::Buffer(std::make_shared<rclcpp::Clock>(RCL_ROS_TIME),
                                    (tf2::Duration)(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), node_))
   , tf_listener_(*tf_buffer_, node_)
@@ -256,19 +260,19 @@ void ControlTabWidget::loadWidget(const rviz_common::Config& config)
     if (it != groups.end())
     {
       group_name_->setCurrentText(group_name);
-      Q_EMIT group_name_->activated(group_name);
+      Q_EMIT group_name_->textActivated(group_name);
     }
   }
   QString solver_name;
   config.mapGetString("solver", &solver_name);
   if (!solver_name.isEmpty())
   {
-    for (size_t i = 0; i < calibration_solver_->count(); ++i)
+    for (size_t i = 0; i < static_cast<size_t>(calibration_solver_->count()); ++i)
     {
       if (calibration_solver_->itemText(i) == solver_name)
       {
         calibration_solver_->setCurrentText(solver_name);
-        Q_EMIT calibration_solver_->activated(solver_name);
+        Q_EMIT calibration_solver_->textActivated(solver_name);
         break;
       }
     }
@@ -387,7 +391,7 @@ bool ControlTabWidget::takeTransformSamples()
   return true;
 }
 
-void ControlTabWidget::solveBtnClicked(bool clicked)
+void ControlTabWidget::solveBtnClicked(bool /*clicked*/)
 {
   solveCameraRobotPose();
 }
@@ -554,7 +558,7 @@ void ControlTabWidget::updateFrameNames(std::map<std::string, std::string> names
     RCLCPP_DEBUG_STREAM(node_->get_logger(), name.first << " : " << name.second);
 }
 
-void ControlTabWidget::takeSampleBtnClicked(bool clicked)
+void ControlTabWidget::takeSampleBtnClicked(bool /*clicked*/)
 {
   if (frameNamesEmpty() || !takeTransformSamples())
     return;
@@ -591,7 +595,7 @@ void ControlTabWidget::takeSampleBtnClicked(bool clicked)
   }
 }
 
-void ControlTabWidget::clearSamplesBtnClicked(bool clicked)
+void ControlTabWidget::clearSamplesBtnClicked(bool /*clicked*/)
 {
   // Clear recorded transforms
   effector_wrt_world_.clear();
@@ -604,7 +608,7 @@ void ControlTabWidget::clearSamplesBtnClicked(bool clicked)
   auto_progress_->setValue(0);
 }
 
-void ControlTabWidget::saveCameraPoseBtnClicked(bool clicked)
+void ControlTabWidget::saveCameraPoseBtnClicked(bool /*clicked*/)
 {
   std::string& from_frame = frame_names_[from_frame_tag_];
   std::string& to_frame = frame_names_["sensor"];
@@ -722,8 +726,7 @@ void ControlTabWidget::fillPlanningGroupNameComboBox()
 {
   group_name_->clear();
   // Fill in available planning group names
-  planning_scene_monitor_.reset(new planning_scene_monitor::PlanningSceneMonitor(node_, "robot_description", tf_buffer_,
-                                                                                 "planning_scene_monitor"));
+  planning_scene_monitor_.reset(new planning_scene_monitor::PlanningSceneMonitor(node_, "robot_description", "planning_scene_monitor"));
   if (planning_scene_monitor_)
   {
     planning_scene_monitor_->startSceneMonitor(calibration_display_->planning_scene_topic_property_->getStdString());
@@ -743,7 +746,7 @@ void ControlTabWidget::fillPlanningGroupNameComboBox()
   }
 }
 
-void ControlTabWidget::saveJointStateBtnClicked(bool clicked)
+void ControlTabWidget::saveJointStateBtnClicked(bool /*clicked*/)
 {
   if (!checkJointStates())
   {
@@ -797,7 +800,7 @@ void ControlTabWidget::saveJointStateBtnClicked(bool clicked)
   out << emitter.c_str();
 }
 
-void ControlTabWidget::loadSamplesBtnClicked(bool clicked)
+void ControlTabWidget::loadSamplesBtnClicked(bool /*clicked*/)
 {
   QString file_name = QFileDialog::getOpenFileName(this, tr("Load Samples"), "", tr("Target File (*.yaml)"), nullptr,
                                                    QFileDialog::DontUseNativeDialog);
@@ -839,7 +842,7 @@ void ControlTabWidget::loadSamplesBtnClicked(bool clicked)
   }
 }
 
-void ControlTabWidget::saveSamplesBtnClicked(bool clicked)
+void ControlTabWidget::saveSamplesBtnClicked(bool /*clicked*/)
 {
   if (effector_wrt_world_.size() != object_wrt_sensor_.size())
   {
@@ -898,7 +901,7 @@ void ControlTabWidget::saveSamplesBtnClicked(bool clicked)
   out << emitter.c_str();
 }
 
-void ControlTabWidget::loadJointStateBtnClicked(bool clicked)
+void ControlTabWidget::loadJointStateBtnClicked(bool /*clicked*/)
 {
   // DontUseNativeDialog option set to avoid this issue: https://github.com/ros-planning/moveit/issues/2357
   QString file_name =
@@ -972,7 +975,7 @@ void ControlTabWidget::loadJointStateBtnClicked(bool clicked)
   RCLCPP_INFO_STREAM(node_->get_logger(), "Loaded and parsed: " << file_name.toStdString());
 }
 
-void ControlTabWidget::autoPlanBtnClicked(bool clicked)
+void ControlTabWidget::autoPlanBtnClicked(bool /*clicked*/)
 {
   auto_plan_btn_->setEnabled(false);
   plan_watcher_->setFuture(QtConcurrent::run(this, &ControlTabWidget::computePlan));
@@ -1029,7 +1032,7 @@ void ControlTabWidget::computePlan()
     move_group_->setMaxVelocityScalingFactor(0.5);
     move_group_->setMaxAccelerationScalingFactor(0.5);
     current_plan_.reset(new moveit::planning_interface::MoveGroupInterface::Plan());
-    planning_res_ = (move_group_->plan(*current_plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS) ?
+    planning_res_ = (move_group_->plan(*current_plan_) == moveit::core::MoveItErrorCode::SUCCESS) ?
                         ControlTabWidget::SUCCESS :
                         ControlTabWidget::FAILURE_PLAN_FAILED;
 
@@ -1040,7 +1043,7 @@ void ControlTabWidget::computePlan()
   }
 }
 
-void ControlTabWidget::autoExecuteBtnClicked(bool clicked)
+void ControlTabWidget::autoExecuteBtnClicked(bool /*clicked*/)
 {
   if (plan_watcher_->isRunning())
   {
@@ -1054,7 +1057,7 @@ void ControlTabWidget::autoExecuteBtnClicked(bool clicked)
 void ControlTabWidget::computeExecution()
 {
   if (move_group_ && current_plan_)
-    planning_res_ = (move_group_->execute(*current_plan_) == moveit::planning_interface::MoveItErrorCode::SUCCESS) ?
+    planning_res_ = (move_group_->execute(*current_plan_) == moveit::core::MoveItErrorCode::SUCCESS) ?
                         ControlTabWidget::SUCCESS :
                         ControlTabWidget::FAILURE_PLAN_FAILED;
 
@@ -1114,7 +1117,7 @@ void ControlTabWidget::executeFinished()
   RCLCPP_DEBUG(node_->get_logger(), "Execution finished");
 }
 
-void ControlTabWidget::autoSkipBtnClicked(bool clicked)
+void ControlTabWidget::autoSkipBtnClicked(bool /*clicked*/)
 {
   auto_progress_->setValue(auto_progress_->getValue() + 1);
 }

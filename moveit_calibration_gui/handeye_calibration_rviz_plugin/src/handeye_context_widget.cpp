@@ -39,7 +39,7 @@
 
 namespace moveit_rviz_plugin
 {
-void TFFrameNameComboBox::mousePressEvent(QMouseEvent* event)
+void TFFrameNameComboBox::mousePressEvent(QMouseEvent* /*event*/)
 {
   context_->getFrameManager()->update();
   std::vector<std::string> names = context_->getFrameManager()->getAllFrameNames();
@@ -81,7 +81,7 @@ bool TFFrameNameComboBox::hasFrame(const std::string& frame_name)
 }
 
 SliderWidget::SliderWidget(QWidget* parent, std::string name, double min, double max)
-  : QWidget(parent), min_position_(min), max_position_(max)
+  : QWidget(parent), max_position_(max), min_position_(min) 
 {
   QHBoxLayout* row = new QHBoxLayout(this);
   row->setContentsMargins(0, 10, 0, 10);
@@ -154,9 +154,9 @@ void SliderWidget::changeSlider()
 ContextTabWidget::ContextTabWidget(rclcpp::Node::SharedPtr node, HandEyeCalibrationDisplay* pdisplay,
                                    rviz_common::DisplayContext* context, QWidget* parent)
   : QWidget(parent)
+  , calibration_display_(pdisplay)
   , node_(node)
   , context_(context)
-  , calibration_display_(pdisplay)
   , tf_buffer_(std::make_shared<tf2_ros::Buffer>(node_->get_clock()))
   , tf_listener_(std::make_shared<tf2_ros::TransformListener>(*tf_buffer_))
 {
@@ -512,7 +512,7 @@ void ContextTabWidget::updateSensorMountType(int index)
   Q_EMIT sensorMountTypeChanged(index);
 }
 
-void ContextTabWidget::updateFrameName(int index)
+void ContextTabWidget::updateFrameName(int /*index*/)
 {
   updateAllMarkers();
   updateFOVPose();
@@ -538,7 +538,7 @@ void ContextTabWidget::updateFrameName(int index)
   Q_EMIT frameNameChanged(names);
 }
 
-void ContextTabWidget::updateCameraMarkerPose(double value)
+void ContextTabWidget::updateCameraMarkerPose(double /*value*/)
 {
   updateAllMarkers();
 }

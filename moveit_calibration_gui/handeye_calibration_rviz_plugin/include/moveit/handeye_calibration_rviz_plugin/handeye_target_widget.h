@@ -61,7 +61,11 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 
+#if __has_include(<cv_bridge/cv_bridge.hpp>)
+#include <cv_bridge/cv_bridge.hpp>
+#else
 #include <cv_bridge/cv_bridge.h>
+#endif
 #include <image_transport/image_transport.hpp>
 
 #include <pluginlib/class_loader.hpp>
@@ -89,7 +93,7 @@ class RosTopicComboBox : public QComboBox
 {
   Q_OBJECT
 public:
-  explicit RosTopicComboBox(rclcpp::Node::SharedPtr node, QWidget* parent = Q_NULLPTR) : node_(node), QComboBox(parent)
+  explicit RosTopicComboBox(rclcpp::Node::SharedPtr node, QWidget* parent = Q_NULLPTR) : QComboBox(parent), node_(node) 
   {
   }
   ~RosTopicComboBox() = default;
@@ -192,7 +196,7 @@ private:
 
   std::string optical_frame_;
 
-  sensor_msgs::msg::CameraInfo::ConstPtr camera_info_;
+  sensor_msgs::msg::CameraInfo::ConstSharedPtr camera_info_;
 
   // **************************************************************
   // Ros components

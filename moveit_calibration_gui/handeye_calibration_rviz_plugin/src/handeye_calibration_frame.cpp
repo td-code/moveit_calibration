@@ -45,7 +45,7 @@ namespace moveit_rviz_plugin
 {
 HandEyeCalibrationFrame::HandEyeCalibrationFrame(HandEyeCalibrationDisplay* pdisplay,
                                                  rviz_common::DisplayContext* context, QWidget* parent)
-  : QWidget(parent), calibration_display_(pdisplay), context_(context)
+  : QWidget(parent), context_(context), calibration_display_(pdisplay)
 {
   node_ = std::make_shared<rclcpp::Node>("handeye_calibration_frame");
   setMinimumSize(695, 460);

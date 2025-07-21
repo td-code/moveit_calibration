@@ -75,21 +75,21 @@ bool RosTopicComboBox::getFilteredTopics()
   return !image_topics_.isEmpty();
 }
 
-void RosTopicComboBox::mousePressEvent(QMouseEvent* event)
+void RosTopicComboBox::mousePressEvent(QMouseEvent* /*event*/)
 {
   getFilteredTopics();
   showPopup();
 }
 
 TargetTabWidget::TargetTabWidget(rclcpp::Node::SharedPtr node, HandEyeCalibrationDisplay* pdisplay, QWidget* parent)
-  : QWidget(parent)
-  , node_(node)
-  , calibration_display_(pdisplay)
-  , it_(node_)
-  , tf_pub_(std::make_shared<tf2_ros::TransformBroadcaster>(node_))
+  : it_(node)
+  , tf_pub_(std::make_shared<tf2_ros::TransformBroadcaster>(node))
   , target_plugins_loader_(nullptr)
   , target_(nullptr)
-  , target_param_layout_(new QFormLayout())
+  , target_param_layout_(new QFormLayout()) 
+  , QWidget(parent)
+  , calibration_display_(pdisplay)
+  , node_(node)
 {
   // Target setting tab area -----------------------------------------------
   QHBoxLayout* layout = new QHBoxLayout();
@@ -488,7 +488,7 @@ void TargetTabWidget::targetTypeComboboxChanged(const QString& text)
   }
 }
 
-void TargetTabWidget::createTargetImageBtnClicked(bool clicked)
+void TargetTabWidget::createTargetImageBtnClicked(bool /*clicked*/)
 {
   createTargetInstance();
   if (target_)
@@ -510,7 +510,7 @@ void TargetTabWidget::createTargetImageBtnClicked(bool clicked)
   }
 }
 
-void TargetTabWidget::saveTargetImageBtnClicked(bool clicked)
+void TargetTabWidget::saveTargetImageBtnClicked(bool /*clicked*/)
 {
   if (target_image_.empty())
   {

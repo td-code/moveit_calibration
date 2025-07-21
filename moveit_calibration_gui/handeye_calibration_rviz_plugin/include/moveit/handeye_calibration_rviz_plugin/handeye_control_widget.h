@@ -55,12 +55,16 @@
 #include <QStandardItemModel>
 
 // ros
+#if __has_include(<tf2_eigen/tf2_eigen.hpp>)
+#include <tf2_eigen/tf2_eigen.hpp>
+#else
 #include <tf2_eigen/tf2_eigen.h>
+#endif
 #include <pluginlib/class_loader.hpp>
 #include <tf2_ros/transform_listener.h>
 #include <rviz_visual_tools/tf_visual_tools.hpp>
-#include <moveit/move_group_interface/move_group_interface.h>
-#include <moveit/planning_scene_monitor/planning_scene_monitor.h>
+#include <moveit/move_group_interface/move_group_interface.hpp>
+#include <moveit/planning_scene_monitor/planning_scene_monitor.hpp>
 #include <moveit/handeye_calibration_solver/handeye_solver_base.h>
 #include <moveit/planning_scene_rviz_plugin/background_processing.hpp>
 #include <moveit/handeye_calibration_rviz_plugin/handeye_calibration_display.h>
