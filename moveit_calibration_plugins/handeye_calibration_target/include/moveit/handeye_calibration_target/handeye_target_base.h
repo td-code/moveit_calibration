@@ -82,7 +82,7 @@ public:
     const std::vector<std::string> enum_values_;
 
     Parameter(std::string name, ParameterType parameter_type, int default_value = 0)
-      : name_(name), parameter_type_(parameter_type)
+      : parameter_type_(parameter_type), name_(name)
     {
       if (parameter_type_ == ParameterType::Int)
         value_.i = default_value;
@@ -92,7 +92,7 @@ public:
     }
 
     Parameter(std::string name, ParameterType parameter_type, float default_value = 0.)
-      : name_(name), parameter_type_(parameter_type)
+      : parameter_type_(parameter_type), name_(name)
     {
       if (parameter_type_ == ParameterType::Float)
         value_.f = default_value;
@@ -102,7 +102,7 @@ public:
     }
 
     Parameter(std::string name, ParameterType parameter_type, double default_value = 0.)
-      : name_(name), parameter_type_(parameter_type)
+      : parameter_type_(parameter_type), name_(name) 
     {
       if (parameter_type_ == ParameterType::Float)
         value_.f = default_value;
@@ -113,7 +113,7 @@ public:
 
     Parameter(std::string name, ParameterType parameter_type, std::vector<std::string> enum_values,
               size_t default_option = 0)
-      : name_(name), parameter_type_(parameter_type), enum_values_(enum_values)
+      : parameter_type_(parameter_type), name_(name), enum_values_(enum_values)
     {
       if (default_option < enum_values_.size())
         value_.e = default_option;

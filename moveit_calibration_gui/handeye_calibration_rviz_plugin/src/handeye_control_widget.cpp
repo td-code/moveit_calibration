@@ -103,16 +103,16 @@ ControlTabWidget::ControlTabWidget(rclcpp::Node::SharedPtr node, HandEyeCalibrat
   , calibration_display_(pdisplay)
   , node_(node)
   , tf_buffer_(new tf2_ros::Buffer(std::make_shared<rclcpp::Clock>(RCL_ROS_TIME),
-                                   (tf2::Duration)(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), node_))
-  , tf_listener_(*tf_buffer_, node_)
+                                   static_cast<tf2::Duration>(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), node_))
   , sensor_mount_type_(mhc::EYE_TO_HAND)
   , from_frame_tag_("base")
   , solver_plugins_loader_(nullptr)
   , solver_(nullptr)
-  , move_group_(nullptr)
   , camera_robot_pose_(Eigen::Isometry3d::Identity())
   , auto_started_(false)
   , planning_res_(ControlTabWidget::SUCCESS)
+  , move_group_(nullptr)
+  , tf_listener_(*tf_buffer_, node_)
 {
   QVBoxLayout* layout = new QVBoxLayout();
   this->setLayout(layout);
